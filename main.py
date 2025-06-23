@@ -37,5 +37,5 @@ def move_files(folder_path):
             print("Moved", f, "to", t)
 
 # main code
-folder = input("Enter folder path: ")
+folder = input("Enter folder path:   ")
 move_files(folder)
