@@ -1,45 +1,41 @@
 import os
 import shutil
 
-# Define file type categories
+# file extensions
 FILE_TYPES = {
-    "Images": [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
-    "Documents": [".pdf", ".docx", ".txt", ".xlsx", ".pptx"],
-    "Videos": [".mp4", ".mkv", ".mov", ".avi"],
-    "Audio": [".mp3", ".wav", ".aac"],
-    "Archives": [".zip", ".rar", ".tar", ".gz"],
-    "Code": [".py", ".js", ".html", ".css", ".cpp", ".java"],
-    "Others": []
+    "Images": [".jpg", ".png"],
+    "Docs": [".pdf", ".txt"],
+    "Videos": [".mp4"]
 }
 
-def create_folder(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+def make_folder(folder):
+    if not os.path.exists(folder):
+        os.mkdir(folder)
 
-def get_category(file_name):
-    ext = os.path.splitext(file_name)[1].lower()
-    for category, extensions in FILE_TYPES.items():
-        if ext in extensions:
-            return category
-    return "Others"
+def check_type(filename):
+    name, ext = os.path.splitext(filename)
+    ext = ext.lower()
+    if ext in FILE_TYPES["Images"]:
+        return "Images"
+    elif ext in FILE_TYPES["Docs"]:
+        return "Docs"
+    elif ext in FILE_TYPES["Videos"]:
+        return "Videos"
+    else:
+        return "Others"
 
-def organize_files(folder_path):
-    if not os.path.exists(folder_path):
-        print("❌ Folder does not exist.")
-        return
+def move_files(folder_path):
+    files = os.listdir(folder_path)
+    for f in files:
+        full = os.path.join(folder_path, f)
+        if os.path.isfile(full):
+            t = check_type(f)
+            new_folder = os.path.join(folder_path, t)
+            make_folder(new_folder)
+            dest = os.path.join(new_folder, f)
+            shutil.move(full, dest)
+            print("Moved", f, "to", t)
 
-    for file in os.listdir(folder_path):
-        full_path = os.path.join(folder_path, file)
-        if os.path.isfile(full_path):
-            category = get_category(file)
-            category_folder = os.path.join(folder_path, category)
-            create_folder(category_folder)
-            new_location = os.path.join(category_folder, file)
-            shutil.move(full_path, new_location)
-            print(f"✅ Moved: {file} → {category}/")
-
-    print("🎉 Organizing complete!")
-
-if __name__ == "__main__":
-    path = input("Enter the folder path to organize: ").strip()
-    organize_files(path)
+# main code
+folder = input("Enter folder path: ")
+move_files(folder)
